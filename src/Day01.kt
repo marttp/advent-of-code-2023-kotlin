@@ -48,7 +48,7 @@ fun main() {
         var sum = 0
         for (inputLine in input) {
             val (firstDigit, lastDigit) = getFirstAndLastDigit(inputLine)
-            sum = sum.plus("${firstDigit.value}${lastDigit.value}".toInt())
+            sum = sum.plus(firstDigit.value * 10 + lastDigit.value)
         }
         return sum
     }
@@ -62,7 +62,7 @@ fun main() {
             val finalFirstDigit = if (firstDigit.index < firstDigitByText.index) firstDigit.value else firstDigitByText.value
             val finalLastDigit = if (lastDigit.index > lastDigitByText.index) lastDigit.value else lastDigitByText.value
 
-            sum = sum.plus("${finalFirstDigit}${finalLastDigit}".toInt())
+            sum = sum.plus(finalFirstDigit * 10 + finalLastDigit)
         }
         return sum
     }
