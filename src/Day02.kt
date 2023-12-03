@@ -4,14 +4,14 @@ fun main() {
     val input1 = readInput("input-2")
 
     val sample1 = readInput("sample1-2")
-    check(InnerUtil.part1(sample1) == 8)
-    InnerUtil.part1(input1).println()
+    check(Day02Util.part1(sample1) == 8)
+    Day02Util.part1(input1).println()
 
-    check(InnerUtil.part2(sample1) == 2286)
-    InnerUtil.part2(input1).println()
+    check(Day02Util.part2(sample1) == 2286)
+    Day02Util.part2(input1).println()
 }
 
-private object InnerUtil {
+private object Day02Util {
 
     // The Elf would first like to know
     // which games would have been possible
@@ -72,8 +72,8 @@ private object InnerUtil {
             stoneBag = stoneBag
         )
     }
+
+    data class Game(val id: Int, val stoneBag: StoneBag)
+
+    data class StoneBag(var maxRed: Int, var maxGreen: Int, var maxBlue: Int)
 }
-
-data class Game(val id: Int, val stoneBag: StoneBag)
-
-data class StoneBag(var maxRed: Int, var maxGreen: Int, var maxBlue: Int)
