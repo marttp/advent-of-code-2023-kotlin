@@ -7,13 +7,23 @@ fun main() {
     val input1 = readInput("input-5")
 
     val sample1 = readInput("sample1-5")
-    check(Day05Util.part1(sample1) == 35L)
-    val result1 = Day05Util.part1(input1)
+//    check(Day05Util.part1(sample1) == 35L)
+//    val result1 = Day05Util.part1(input1)
+//    result1.println()
+//    check(result1 == 107430936L)
+//
+//    check(Day05Util.part2(sample1) == 46L)
+//    val result2 = Day05Util.part2(input1)
+//    result2.println()
+//    check(result2 == 23738616L)
+
+    check(Day05Alternative.part1(sample1) == 35L)
+    val result1 = Day05Alternative.part1(input1)
     result1.println()
     check(result1 == 107430936L)
 
-    check(Day05Util.part2(sample1) == 46L)
-    val result2 = Day05Util.part2(input1)
+    check(Day05Alternative.part2(sample1) == 46L)
+    val result2 = Day05Alternative.part2(input1)
     result2.println()
     check(result2 == 23738616L)
 }
@@ -159,5 +169,78 @@ private object Day05Util {
         TEMPERATURE,
         HUMIDITY,
         LOCATION
+    }
+}
+
+private object Day05Alternative {
+    fun part1(input: List<String>): Long {
+        val seeds = parseSeedsForPart1(input)
+        val mapperResources = parseMapperResources(input)
+        // Finding the minimum location based on seed
+        return seeds.minOf { seed ->
+            mapperResources.fold(seed) { currentState, ranges ->
+                ranges.firstOrNull { currentState in it }?.sourceToDestination(currentState) ?: currentState
+            }
+        }
+    }
+
+    fun part2(input: List<String>): Long {
+        // location -> humidity -> temperature -> light -> water -> fertilizer -> soil -> seed
+        val mapperReverse = parseMapperResources(input)
+            .map { it.map { it.flip() } }.reversed()
+        val possibleSeedSet = parseSeedsForPart2(input)
+        return generateSequence(0L, Long::inc).first { location ->
+            val targetSeed = mapperReverse.fold(location) { currentState, ranges ->
+                ranges.firstOrNull { currentState in it }?.sourceToDestination(currentState) ?: currentState
+            }
+            possibleSeedSet.any { targetSeed in it }
+        }
+    }
+
+    /**
+     * Concept: Threat all mapper as layers, and each layer has a set of ranges.
+     * The input will transform the output on every layer.
+    */
+    private fun parseMapperResources(input: List<String>): List<Set<Range>> =
+        input.drop(2).joinToString("\n") // Join all lines after the first two
+            .split("\n\n") // Split the line contain empty line
+            .map {
+                it.split("\n") // Split by line
+                    .drop(1) // Drop label line
+                    .map { line -> Range.of(line) }.toSet()
+            }
+
+    private fun parseSeedsForPart1(input: List<String>): List<Long> =
+        // Split data after this delimiter
+        input.first().removePrefix("seeds:")
+            .trim().split(" ").map { it.toLong() }
+
+    private fun parseSeedsForPart2(input: List<String>): Set<LongRange> =
+        // Split data after this delimiter
+        input.first().removePrefix("seeds:")
+            .trim().split(" ").map { it.toLong() }
+            // Prepare for combine range
+            // 0 - start
+            // 1 - start + range = max range
+            .chunked(2)
+            .map { it.first()..<(it.first() + it.last()) }
+            .toSet()
+
+    data class Range(val source: LongRange, val destination: LongRange) {
+        fun flip(): Range = Range(destination, source)
+
+        fun sourceToDestination(value: Long): Long = destination.first + (value - source.first)
+
+        operator fun contains(num: Long): Boolean = num in source
+
+        companion object {
+            fun of(row: String): Range {
+                val (dest, source, length) = row.split(" ").map { it.toLong() }
+                return Range(
+                    source..<(source + length),
+                    dest..<(dest + length)
+                )
+            }
+        }
     }
 }
