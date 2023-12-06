@@ -19,3 +19,21 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
  * The cleaner shorthand for printing output.
  */
 fun Any?.println() = println(this)
+
+val digitMap = mapOf(
+    "one" to 1,
+    "two" to 2,
+    "three" to 3,
+    "four" to 4,
+    "five" to 5,
+    "six" to 6,
+    "seven" to 7,
+    "eight" to 8,
+    "nine" to 9
+)
+
+val EIGHT_DIRECTIONS = listOf(
+    Pair(-1, -1), Pair(-1, 0), Pair(-1, 1),
+    Pair(0, -1), Pair(0, 1),
+    Pair(1, -1), Pair(1, 0), Pair(1, 1)
+)

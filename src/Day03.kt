@@ -10,12 +10,6 @@ fun main() {
 
 private object Day03Util {
 
-    val EIGHT_DIRECTIONS = listOf(
-        Pair(-1, -1), Pair(-1, 0), Pair(-1, 1),
-        Pair(0, -1), Pair(0, 1),
-        Pair(1, -1), Pair(1, 0), Pair(1, 1)
-    )
-
     fun part1(input: List<String>): Int {
         val maxRow = input.size
         val maxCol = input[0].length
