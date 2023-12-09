@@ -24,6 +24,7 @@ private object Day09Util {
                 seq.zipWithNext { a, b -> b - a }
                     .takeIf { it.any { diff -> diff != 0L } }
             }
+                .toList()
             generator.fold(0L) { acc, seq ->
                 val result = acc + seq.last()
                 result
