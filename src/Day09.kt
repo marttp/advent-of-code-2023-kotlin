@@ -20,7 +20,8 @@ private object Day09Util {
         return input.sumOf {
             // Extract line to sequence of list of longs
             // Furthermore, If one of them not equal to 0, then return the new zip sequence
-            val generator = generateSequence(it.split(" ").map { it.toLong() }) { seq ->
+            val listInput = it.split(" ").map { it.toLong() }
+            val generator = generateSequence(listInput) { seq ->
                 seq.zipWithNext { a, b -> b - a }
                     .takeIf { it.any { diff -> diff != 0L } }
             }
@@ -34,7 +35,8 @@ private object Day09Util {
 
     fun part2(input: List<String>): Long {
         return input.sumOf {
-            val generator = generateSequence(it.split(" ").map { it.toLong() }) { seq ->
+            val listInput = it.split(" ").map { it.toLong() }
+            val generator = generateSequence(listInput) { seq ->
                 seq.zipWithNext { a, b -> b - a }
                     .takeIf { it.any { diff -> diff != 0L } }
             }
