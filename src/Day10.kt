@@ -33,6 +33,15 @@ private object Day10Util {
     const val GROUND = '.'
     const val STARTING_POINT = 'S'
 
+    val VALID_NEXT_MOVES = setOf(
+        VERTICAL_PIPE,
+        HORIZONTAL_PIPE,
+        NORTH_EAST_BEND,
+        NORTH_WEST_BEND,
+        SOUTH_WEST_BEND,
+        SOUTH_EAST_BEND,
+    )
+
     val POSSIBLE_MOVES = mapOf(
         STARTING_POINT to listOf(
             Pair(-1, 0), // Up
@@ -80,17 +89,11 @@ private object Day10Util {
         while (queue.isNotEmpty()) {
             val current = queue.removeFirst()
             answer = max(answer, current.distance)
-            val possibleMoves = POSSIBLE_MOVES[current.pipe] ?: emptyList()
-            for (move in possibleMoves) {
-                val newRow = current.row + move.first
-                val newCol = current.column + move.second
-                if (isInBounds(matrix, newRow, newCol) &&
-                    !visitedMatrix[newRow][newCol] &&
-                    isConnecting(current.pipe, matrix[newRow][newCol], move.first, move.second)
-                ) {
-                    visitedMatrix[newRow][newCol] = true
-                    queue.add(Point(matrix[newRow][newCol], newRow, newCol, current.distance + 1))
-                }
+            val nextMoves = current.nextMoves(matrix)
+                .filter { !visitedMatrix[it.row][it.column] }
+            for (move in nextMoves) {
+                visitedMatrix[move.row][move.column] = true
+                queue.add(move)
             }
         }
 
@@ -130,22 +133,30 @@ private object Day10Util {
         throw Exception("No starting point found")
     }
 
-    private fun isConnecting(c: Char, n: Char, dx: Int, dy: Int): Boolean {
-        val up = dx == -1 && dy == 0
-        val down = dx == 1 && dy == 0
-        val left = dx == 0 && dy == -1
-        val right = dx == 0 && dy == 1
-        return when (c) {
-            'S' -> (n in "|7F" && up) || (n in "|LJ" && down) || (n in "-J7" && right) || (n in "-FL" && left)
-            '|' -> (n in "LJ" && down) || (n in "F7" && up) || (n == '|' && dy == 0)
-            '-' -> (n in "FL" && left) || (n in "J7" && right) || (n == '-' && dx == 0)
-            'J' -> (n in "7F|" && up) || (n in "LF-" && left)
-            'F' -> (n in "J|L" && down) || (n in "7-J" && right)
-            '7' -> (n in "FL-" && left) || (n in "J|L" && down)
-            'L' -> (n in "7F|" && up) || (n in "J-7" && right)
-            else -> false
+    data class Point(val pipe: Char, val row: Int, val column: Int, val distance: Long = 0) {
+        fun nextMoves(matrix: Array<Array<Char>>): List<Point> {
+            val possibleMoves = POSSIBLE_MOVES[pipe] ?: emptyList()
+            return possibleMoves.filter { isInBounds(matrix, row + it.first, column + it.second) }
+                .filter { isConnecting(pipe, matrix[row + it.first][column + it.second], it.first, it.second) }
+                .map { Point(matrix[row + it.first][column + it.second], row + it.first, column + it.second, distance + 1) }
+                .filter {  matrix[it.row][it.column] in VALID_NEXT_MOVES }
+        }
+
+        private fun isConnecting(c: Char, n: Char, dx: Int, dy: Int): Boolean {
+            val up = dx == -1 && dy == 0
+            val down = dx == 1 && dy == 0
+            val left = dx == 0 && dy == -1
+            val right = dx == 0 && dy == 1
+            return when (c) {
+                'S' -> (n in "|7F" && up) || (n in "|LJ" && down) || (n in "-J7" && right) || (n in "-FL" && left)
+                '|' -> (n in "LJ" && down) || (n in "F7" && up) || (n == '|' && dy == 0)
+                '-' -> (n in "FL" && left) || (n in "J7" && right) || (n == '-' && dx == 0)
+                'J' -> (n in "7F|" && up) || (n in "LF-" && left)
+                'F' -> (n in "J|L" && down) || (n in "7-J" && right)
+                '7' -> (n in "FL-" && left) || (n in "J|L" && down)
+                'L' -> (n in "7F|" && up) || (n in "J-7" && right)
+                else -> false
+            }
         }
     }
-
-    data class Point(val pipe: Char, val row: Int, val column: Int, val distance: Long = 0)
 }
