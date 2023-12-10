@@ -10,7 +10,16 @@ fun main() {
     check(Day10Util.part1(sample1) == 4L)
     check(Day10Util.part1(sample2) == 8L)
     val output1 = Day10Util.part1(input1)
+    check(output1 == 6820L)
     output1.println()
+
+    // Part2
+    check(Day10Util.part2(readInput("sample3-10")) == 4L)
+    check(Day10Util.part2(readInput("sample4-10")) == 8L)
+    check(Day10Util.part2(readInput("sample5-10")) == 10L)
+    val output2 = Day10Util.part2(input1)
+    check(output2 == 337L)
+    output2.println()
 }
 
 private object Day10Util {
@@ -32,6 +41,8 @@ private object Day10Util {
     const val SOUTH_EAST_BEND = 'F' // DOWN and RIGHT
     const val GROUND = '.'
     const val STARTING_POINT = 'S'
+    const val MARKER = 'O'
+    const val ENCLOSED = 'I'
 
     val VALID_NEXT_MOVES = setOf(
         VERTICAL_PIPE,
@@ -100,8 +111,76 @@ private object Day10Util {
         return answer
     }
 
-    fun part2(input: List<String>): Int {
-        return 0
+    fun part2(input: List<String>): Long {
+        val matrix = createMatrix(input)
+        val visitedMatrix = createVisitedMatrix(input)
+
+        val startingPoint = getStartingPoint(matrix)
+        val queue = ArrayDeque<Point>()
+        queue.add(startingPoint)
+        visitedMatrix[startingPoint.row][startingPoint.column] = true
+
+        while (queue.isNotEmpty()) {
+            val current = queue.removeFirst()
+            val nextMoves = current.nextMoves(matrix)
+                .filter { !visitedMatrix[it.row][it.column] }
+            for (move in nextMoves) {
+                visitedMatrix[move.row][move.column] = true
+                queue.add(move)
+            }
+        }
+
+        floodVisitedFill(matrix, visitedMatrix)
+
+
+        var answer = 0L
+        for (r in matrix.indices) {
+            for (c in matrix[r].indices) {
+                if (matrix[r][c] == GROUND || !visitedMatrix[r][c]) {
+                    matrix[r][c] = ENCLOSED
+                    answer++
+                }
+            }
+        }
+
+        return answer
+    }
+
+    private fun floodVisitedFill(matrix: Array<Array<Char>>, visitedMatrix: Array<Array<Boolean>>) {
+        // Most Top Row
+        for (c in matrix[0].indices) {
+            if (matrix[0][c] == GROUND) {
+                dfs(matrix, visitedMatrix, 0, c)
+            }
+        }
+        // Most Bottom Row
+        for (c in matrix[0].indices) {
+            if (matrix[matrix.size - 1][c] == GROUND) {
+                dfs(matrix, visitedMatrix, matrix.size - 1, c)
+            }
+        }
+        // Most Left Column
+        for (r in matrix.indices) {
+            if (matrix[r][0] == GROUND) {
+                dfs(matrix, visitedMatrix, r, 0)
+            }
+        }
+        // Most Right Column
+        for (r in matrix.indices) {
+            if (matrix[r][matrix[0].size - 1] == GROUND) {
+                dfs(matrix, visitedMatrix, r, matrix[0].size - 1)
+            }
+        }
+    }
+
+    private fun dfs(matrix: Array<Array<Char>>, visitedMatrix: Array<Array<Boolean>>, r: Int, c: Int) {
+        if (isInBounds(matrix, r, c) && !visitedMatrix[r][c] && matrix[r][c] == GROUND) {
+            visitedMatrix[r][c] = true
+            matrix[r][c] = MARKER
+            for (dir in EIGHT_DIRECTIONS) {
+                dfs(matrix, visitedMatrix, r + dir.first, c + dir.second)
+            }
+        }
     }
 
     fun createMatrix(input: List<String>): Array<Array<Char>> {
@@ -138,8 +217,15 @@ private object Day10Util {
             val possibleMoves = POSSIBLE_MOVES[pipe] ?: emptyList()
             return possibleMoves.filter { isInBounds(matrix, row + it.first, column + it.second) }
                 .filter { isConnecting(pipe, matrix[row + it.first][column + it.second], it.first, it.second) }
-                .map { Point(matrix[row + it.first][column + it.second], row + it.first, column + it.second, distance + 1) }
-                .filter {  matrix[it.row][it.column] in VALID_NEXT_MOVES }
+                .map {
+                    Point(
+                        matrix[row + it.first][column + it.second],
+                        row + it.first,
+                        column + it.second,
+                        distance + 1
+                    )
+                }
+                .filter { matrix[it.row][it.column] in VALID_NEXT_MOVES }
         }
 
         private fun isConnecting(c: Char, n: Char, dx: Int, dy: Int): Boolean {
