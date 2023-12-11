@@ -67,7 +67,7 @@ private object Day11Util {
         return answer
     }
 
-    private fun getManhattan(a: Path, b: Path) =
+    private fun getManhattan(a: Point, b: Point) =
         abs(a.row - b.row) + abs(a.column - b.column)
 
     private fun markGalaxyLabel(spaceObservation: Space) {
@@ -93,14 +93,14 @@ private object Day11Util {
         return spaceObservation
     }
 
-    private fun getStartingPointByEachLabel(spaceObservation: Space): List<Path> {
-        val startingPointList = mutableListOf<Path>()
+    private fun getStartingPointByEachLabel(spaceObservation: Space): List<Point> {
+        val startingPointList = mutableListOf<Point>()
         for (rowIndex in spaceObservation.indices) {
             for (columnIndex in spaceObservation[0].indices) {
                 val currentChar = spaceObservation[rowIndex][columnIndex]
                 if (currentChar != EMPTY_SPACE) {
-                    val path = Path(currentChar, rowIndex, columnIndex)
-                    startingPointList.add(path)
+                    val point = Point(currentChar, rowIndex, columnIndex)
+                    startingPointList.add(point)
                 }
             }
         }
@@ -108,13 +108,13 @@ private object Day11Util {
     }
 
     private fun getGalaxyInfo(spaceObservation: Space): GalaxyInfo {
-        val startingPointList = mutableListOf<Path>()
+        val startingPointList = mutableListOf<Point>()
         for (rowIndex in spaceObservation.indices) {
             for (columnIndex in spaceObservation[0].indices) {
                 val currentChar = spaceObservation[rowIndex][columnIndex]
                 if (currentChar != EMPTY_SPACE) {
-                    val path = Path(currentChar, rowIndex, columnIndex)
-                    startingPointList.add(path)
+                    val point = Point(currentChar, rowIndex, columnIndex)
+                    startingPointList.add(point)
                 }
             }
         }
@@ -167,7 +167,7 @@ private object Day11Util {
         return emptyColumnSet.toList()
     }
 
-    data class Path(val label: Char, var row: Int, var column: Int)
+    data class Point(val label: Char, var row: Int, var column: Int)
 
-    data class GalaxyInfo(val galaxies: List<Path>, val emptyRow: List<Int>, val emptyColumn: List<Int>)
+    data class GalaxyInfo(val galaxies: List<Point>, val emptyRow: List<Int>, val emptyColumn: List<Int>)
 }
