@@ -42,6 +42,10 @@ val FOUR_DIRECTIONS = listOf(
     Pair(-1, 0), Pair(0, 1), Pair(1, 0), Pair(0, -1)
 )
 
-fun isInBounds(matrix: Array<Array<Char>>, row: Int, col: Int): Boolean {
+fun <T> isInBounds(matrix: Array<Array<T>>, row: Int, col: Int): Boolean {
+    return row in matrix.indices && col in matrix[0].indices
+}
+
+fun <T> isInBounds(matrix: List<List<T>>, row: Int, col: Int): Boolean {
     return row in matrix.indices && col in matrix[0].indices
 }
