@@ -30,13 +30,15 @@ private object Day12Util {
         val mappingInputPair = transformToInputPair(input)
         return mappingInputPair.sumOf {
             val (spring, numPattern) = it
-            val spring5Time = mutableListOf(spring)
-            repeat(4) {
-                spring5Time.add(spring)
+            val spring5Time = buildList {
+                repeat(5) {
+                    add(spring)
+                }
             }
-            val numAllPattern = mutableListOf<Int>()
-            repeat(5) {
-                numAllPattern.addAll(numPattern)
+            val numAllPattern = buildList {
+                repeat(5) {
+                    addAll(numPattern)
+                }
             }
             getArrangementPattern(spring5Time.joinToString("?"), numAllPattern)
         }
