@@ -9,6 +9,10 @@ fun main() {
     output1.println()
 
     // Part2
+    check(Day16Util.part2(sample1) == 51)
+    val output2 = Day16Util.part2(input1)
+    check(output2 == 8163)
+    output2.println()
 }
 
 private object Day16Util {
@@ -47,16 +51,39 @@ private object Day16Util {
         ),
     )
 
-    fun part1(input: List<String>): Int {
+    fun part1(input: List<String>, startingPoint: Point2D = Point2D(0, 0), initDirection: Point2D = Point2D.EAST): Int {
         val grid = createGrid(input)
+        return solve(grid, startingPoint, initDirection)
+    }
+
+    private fun solve(grid: Array<CharArray>, startingPoint: Point2D, initDirection: Point2D): Int {
         val energized = grid.createEnergizedTable()
         val seenObstacle = grid.createObstacleTable()
-        dfs(Point2D(0, 0), Point2D.EAST, grid, energized, seenObstacle)
+        dfs(startingPoint, initDirection, grid, energized, seenObstacle)
         return energized.sumOf { it.count { c -> c == ENERGY } }
     }
 
+    // Start from any edge tile
+    // All top row -> SOUTH
+    // All bottom row -> NORTH
+    // All left column -> EAST
+    // All right column -> WEST
     fun part2(input: List<String>): Int {
-        return 0
+        val grid = createGrid(input)
+        val startingList = Point2D.FOUR_DIRECTIONS.map {
+            val startingPoint = when (it) {
+                Point2D.SOUTH -> grid.first().indices.map { colIdx -> Point2D(0, colIdx) }
+                Point2D.NORTH -> grid.last().indices.map { colIdx -> Point2D(grid.lastIndex, colIdx) }
+                Point2D.EAST -> grid.indices.map { rowIdx -> Point2D(rowIdx, 0) }
+                Point2D.WEST -> grid.indices.map { rowIdx -> Point2D(rowIdx, grid.first().lastIndex) }
+                else -> throw IllegalArgumentException("Invalid direction: $it")
+            }
+            startingPoint.map { point2D -> Part2Payload(point2D, it) }
+        }.flatten()
+
+        return startingList.maxOf {
+            solve(grid, it.point2D, it.direction)
+        }
     }
 
     private fun dfs(
@@ -107,4 +134,6 @@ private object Day16Util {
         }
         return obstacles
     }
+
+    data class Part2Payload(val point2D: Point2D, val direction: Point2D)
 }
