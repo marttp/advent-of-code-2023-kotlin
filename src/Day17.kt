@@ -1,5 +1,4 @@
 import helper.graph.findShortestPathByPredicate
-import java.util.*
 
 typealias Rule = Int
 
