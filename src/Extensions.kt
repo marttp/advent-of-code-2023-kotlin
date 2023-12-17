@@ -19,3 +19,10 @@ operator fun Array<CharArray>.set(at: Point2D, c: Char) {
 }
 
 operator fun Array<CharArray>.get(at: Point2D): Char = this[at.row][at.column]
+
+
+// Point2D support for List<List<Int>>
+
+fun List<List<Int>>.isInBounds(point: Point2D) =
+    point.row in indices &&
+            point.column in 0 until this[0].size
