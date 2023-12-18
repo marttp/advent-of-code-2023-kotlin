@@ -11,6 +11,9 @@ data class Point2D(val row: Int, val column: Int) {
     operator fun plus(other: Point2D): Point2D =
         Point2D(row + other.row, column + other.column)
 
+    operator fun times(other: Int): Point2D =
+        Point2D(row * other, column * other)
+
     companion object {
         val NORTH = Point2D(-1, 0)
         val EAST = Point2D(0, 1)
