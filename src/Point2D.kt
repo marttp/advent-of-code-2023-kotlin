@@ -2,6 +2,8 @@ import kotlin.math.abs
 
 data class Point2D(val row: Int, val column: Int) {
 
+    fun getCardinalNeighbors(): List<Point2D> = FOUR_DIRECTIONS.map { this + it }
+
     fun distance(other: Point2D): Int =
         abs(row - other.row) + abs(column - other.column)
 
@@ -13,6 +15,8 @@ data class Point2D(val row: Int, val column: Int) {
 
     operator fun times(other: Int): Point2D =
         Point2D(row * other, column * other)
+
+    operator fun rem(other: Point2D) = Point2D(row pm other.row, column pm other.column)
 
     companion object {
         val NORTH = Point2D(-1, 0)

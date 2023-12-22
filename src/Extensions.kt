@@ -26,3 +26,11 @@ operator fun Array<CharArray>.get(at: Point2D): Char = this[at.row][at.column]
 fun List<List<Int>>.isInBounds(point: Point2D) =
     point.row in indices &&
             point.column in 0 until this[0].size
+
+// Other Util
+
+// Positive modulo
+infix fun Int.pm(other: Int): Int {
+    val mod = this % other
+    return if (mod < 0) mod + other else mod
+}
