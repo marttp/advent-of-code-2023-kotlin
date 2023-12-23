@@ -1,6 +1,6 @@
 package helper.point
 
-import helper.util.pm
+import pm
 import kotlin.math.abs
 
 data class Point2D(val row: Int, val column: Int) {
