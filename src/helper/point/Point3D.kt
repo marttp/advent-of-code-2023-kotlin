@@ -1,4 +1,4 @@
-package helper.util
+package helper.point
 
 import kotlin.math.abs
 

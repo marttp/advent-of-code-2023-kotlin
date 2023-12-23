@@ -1,3 +1,7 @@
+import helper.util.MathUtils
+import helper.util.println
+import helper.util.readInput
+
 fun main() {
     val input1 = readInput("input-8")
     // Sample-Part1

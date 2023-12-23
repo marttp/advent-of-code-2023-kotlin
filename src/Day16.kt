@@ -1,3 +1,8 @@
+import helper.point.Point2D
+import helper.util.isInBounds
+import helper.util.println
+import helper.util.readInput
+
 fun main() {
     val input1 = readInput("input-16")
     // Sample

@@ -1,3 +1,7 @@
+import helper.util.digitMap
+import helper.util.println
+import helper.util.readInput
+
 fun main() {
 
     fun getFirstAndLastDigit(inputLine: String): Pair<Digit, Digit> {

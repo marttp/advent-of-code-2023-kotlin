@@ -1,3 +1,7 @@
+package helper.util
+
+import helper.point.Point2D
+
 // Point2D support for Array<CharArray>
 
 fun Array<CharArray>.show() {

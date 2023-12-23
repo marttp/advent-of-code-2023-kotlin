@@ -1,4 +1,6 @@
-import helper.util.Point3D
+import helper.point.Point3D
+import helper.util.println
+import helper.util.readInput
 import kotlin.math.max
 import kotlin.math.min
 
