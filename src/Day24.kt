@@ -1,3 +1,5 @@
+import com.microsoft.z3.Context
+import com.microsoft.z3.Status
 import helper.util.println
 import helper.util.readInput
 import java.math.BigDecimal
@@ -11,11 +13,19 @@ fun main() {
     val output1 = Day24Util.part1(input1)
     check(output1 == 12740)
     output1.println()
+
+    // Part2
+    val output2 = Day24Util.part2(input1)
+    check(output2 == 741991571910536L)
+    output2.println()
 }
 
 private object Day24Util {
 
-    fun part1(input: List<String>, range: ClosedRange<BigDecimal> = BigDecimal("200000000000000")..BigDecimal("400000000000000")): Int {
+    fun part1(
+        input: List<String>,
+        range: ClosedRange<BigDecimal> = BigDecimal("200000000000000")..BigDecimal("400000000000000")
+    ): Int {
         val hailstones = input.map {
             it.split(" @ ", ", ").map { BigDecimal(it.trim()) }
                 .let { (sx, sy, _, vx, vy) -> Hailstone(sx, sy, vx, vy) }
@@ -56,4 +66,35 @@ private object Day24Util {
         val c = dy * x - dx * y
     }
 
+    fun part2(input: List<String>): Long {
+        val hail = input.map { it.split(" @ ", ", ").map { it.trim().toLong() } }
+        val ctx = Context()
+        val solver = ctx.mkSolver()
+        val mx = ctx.mkRealConst("mx")
+        val m = ctx.mkRealConst("m")
+        val mz = ctx.mkRealConst("mz")
+        val mxv = ctx.mkRealConst("mxv")
+        val mv = ctx.mkRealConst("mv")
+        val mzv = ctx.mkRealConst("mzv")
+
+        repeat(3) {
+            val (sx, sy, sz, sxv, syv, szv) = hail[it]
+            val t = ctx.mkRealConst("t$it")
+            solver.add(ctx.mkEq(ctx.mkAdd(mx, ctx.mkMul(mxv, t)), ctx.mkAdd(ctx.mkReal(sx.toString()), ctx.mkMul(ctx.mkReal(sxv.toString()), t))))
+            solver.add(ctx.mkEq(ctx.mkAdd(m, ctx.mkMul(mv, t)), ctx.mkAdd(ctx.mkReal(sy.toString()), ctx.mkMul(ctx.mkReal(syv.toString()), t))))
+            solver.add(ctx.mkEq(ctx.mkAdd(mz, ctx.mkMul(mzv, t)), ctx.mkAdd(ctx.mkReal(sz.toString()), ctx.mkMul(ctx.mkReal(szv.toString()), t))))
+        }
+
+        if (solver.check() == Status.SATISFIABLE) {
+            val model = solver.model
+            val solution = listOf(mx, m, mz).sumOf { model.eval(it, false).toString().toDouble() }
+            return solution.toLong()
+        }
+
+        return 0
+    }
+
+    operator fun <T> List<T>.component6(): T {
+        return this[5]
+    }
 }
